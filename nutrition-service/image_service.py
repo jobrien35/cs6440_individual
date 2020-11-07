@@ -1,0 +1,44 @@
+import os
+from flask import Flask
+from backported.api_responses import api_error_response
+from endpoints.version_1 import Upload_Image_V1, Download_Image_V1
+
+
+
+UPLOAD_DIRECTORY = '/images/uploads'
+VERSION_1 = '/api/v1/image'
+NO_METHOD = 405
+
+
+
+
+app = Flask(__name__)
+app.debug = True  # restart server on edits
+app.config['UPLOAD_DIRECTORY'] = UPLOAD_DIRECTORY
+
+
+@app.errorhandler(NO_METHOD)
+def unsupported_method(error):
+    """
+    globally catch invalid http methods used on any endpoint
+    """
+    return api_error_response('Endpoint does not support this method',
+                              'UnsupportedMethodError', NO_METHOD)
+
+
+app.add_url_rule(  # image posted here
+    '{0}/upload'.format(VERSION_1),
+    view_func=Upload_Image_V1.as_view('upload')
+)  # POST
+
+
+app.add_url_rule(  # get image from fs
+    '{0}/download'.format(VERSION_1),
+    view_func=Download_Image_V1.as_view('download')
+)  # GET
+
+
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT')))

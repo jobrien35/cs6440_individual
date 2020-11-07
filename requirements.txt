@@ -1,0 +1,1 @@
+-r ./nutrition-service/requirements.txt

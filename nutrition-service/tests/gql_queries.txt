@@ -1,0 +1,90 @@
+--ADMIN REGISTRATION--
+----------------------------------------------------
+
+mutation {
+  register(
+    input:{
+        fname:"sAdmin",
+        lname:"cmpAdmin",
+        email:"admin@test.com",
+        password:"ptest",
+        company:"best company"
+    }
+  )
+}
+
+--LOWUSER REGISTRATION--
+----------------------------------------------------
+
+mutation {
+  register(
+    input:{
+        fname:"fuser",
+        lname:"luser",
+        email:"user@test.com",
+        password:"ptest",
+        company:"best company"
+    }
+  )
+}
+
+--ADMIN LOGIN--
+----------------------------------------------------
+
+mutation {
+    login(input:{email:"admin@test.com",
+                 password:"ptest"
+    }) {
+      jwt
+      refresh
+    }
+}
+
+
+* set authorization header in browser for ip of user-service*
+
+
+--CREATE LOCATION WITH ADMIN--
+----------------------------------------------------
+
+mutation {
+    createLocation(input:"RIT") {
+      id
+        name
+        company {
+          id
+        }
+    }
+}
+
+--APPROVE LOWUSER WITH ADMIN--
+----------------------------------------------------
+
+mutation {
+  approveUser(
+    id:2,
+    input:{
+        permission: ACTIVE
+        locations:[{id:1, permission:WRITE}]
+    }
+  ) {
+    id
+    email
+  }
+}
+
+* deactivate admin authorization header *
+
+--USER LOGIN--
+----------------------------------------------------
+
+mutation {
+    login(input:{email:"user@test.com",
+                 password:"ptest"
+    }) {
+      jwt
+      refresh
+    }
+}
+
+* paste jwt response into postman token variable *

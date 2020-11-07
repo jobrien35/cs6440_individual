@@ -1,0 +1,1402 @@
+{
+	"info": {
+		"name": "senior-project_image-service",
+		"_postman_id": "5ff6529e-19d5-c2b3-5da3-4b17b0e350bd",
+		"description": "for testing inactive users checkout\n2d88b5cf690f9c98f30f3f7db1c539cf43290f78\nfrom user-service to allow them to log in",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "init_users_location",
+			"description": "gql queries to the user-service that create, modify, and setup users and locations",
+			"item": [
+				{
+					"name": "readOnly and inactive",
+					"description": "",
+					"item": [
+						{
+							"name": "2a. Register Lowuser readonly",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"// calling twice will return null"
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"url = pm.environment.get('user_ip');",
+											"console.log('user-service ip: ' + url);",
+											"if (url === undefined) {",
+											"    throw 'wrong environment, use file-service';",
+											"}"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"query\":\"mutation {register( input:{ fname:\\\"test first name\\\", lname:\\\"test last name\\\", email:\\\"readonly@test.com\\\", password:\\\"ptest\\\", company:\\\"best company\\\"})}\"}"
+								},
+								"url": {
+									"raw": "{{user_ip}}",
+									"host": [
+										"{{user_ip}}"
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "2b. Register Lowuser inactive",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"// calling twice will return null"
+										]
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"url = pm.environment.get('user_ip');",
+											"console.log('user-service ip: ' + url);",
+											"if (url === undefined) {",
+											"    throw 'wrong environment, use file-service';",
+											"}"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"query\":\"mutation {register( input:{ fname:\\\"test first name\\\", lname:\\\"test last name\\\", email:\\\"inactive@test.com\\\", password:\\\"ptest\\\", company:\\\"best company\\\"})}\"}"
+								},
+								"url": {
+									"raw": "{{user_ip}}",
+									"host": [
+										"{{user_ip}}"
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "5a. Admin approves lowuser readonly to location",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);",
+											"console.log(jsonData);",
+											"",
+											"if (jsonData.data.approveUser !== null) {",
+											"    pm.test(\"Status code is 200\", function () {",
+											"        pm.response.to.have.status(200);",
+											"    });",
+											"    ",
+											"    pm.test(\"Readonly Approved Successfully\", function () {",
+											"        pm.expect(jsonData.data.approveUser.email).to.eql('readonly@test.com');",
+											"    });",
+											"    console.log(\"[I] approve user: No errors\");",
+											"}",
+											"",
+											"else {",
+											"    if (jsonData.errors[0].name === \"ForbiddenError\") {",
+											"        console.log(\"[I] approve usern: User is not admin\");",
+											"    }",
+											"",
+											"}",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"query\":\"mutation {approveUser(id:3, input:{ permission: ACTIVE locations:[{id:1, permission:WRITE}]}) {id email}}\"}\n"
+								},
+								"url": {
+									"raw": "{{user_ip}}",
+									"host": [
+										"{{user_ip}}"
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "6a. Login lowuser readonly and set token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"res = JSON.parse(responseBody);",
+											"pm.environment.set(\"token\", res.data.login.jwt);",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"query\":\"mutation {login(input:{email:\\\"readonly@test.com\\\", password:\\\"ptest\\\"}) { jwt refresh } }\"}\n"
+								},
+								"url": {
+									"raw": "{{user_ip}}",
+									"host": [
+										"{{user_ip}}"
+									]
+								},
+								"description": null
+							},
+							"response": []
+						},
+						{
+							"name": "6b. Login inactive and set token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"res = JSON.parse(responseBody);",
+											"pm.environment.set(\"token\", res.data.login.jwt);",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"query\":\"mutation {login(input:{email:\\\"inactive@test.com\\\", password:\\\"ptest\\\"}) { jwt refresh } }\"}\n"
+								},
+								"url": {
+									"raw": "{{user_ip}}",
+									"host": [
+										"{{user_ip}}"
+									]
+								},
+								"description": null
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "1. Register Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// calling twice will return null"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"url = pm.environment.get('user_ip');",
+									"console.log('user-service ip: ' + url);",
+									"if (url === undefined) {",
+									"    throw 'wrong environment, use file-service';",
+									"}",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"query\":\"mutation {register( input:{ fname:\\\"sAdmin\\\", lname:\\\"cmpAdmin\\\", email:\\\"admin@test.com\\\", password:\\\"ptest\\\", company:\\\"best company\\\"})}\"}"
+						},
+						"url": {
+							"raw": "{{user_ip}}",
+							"host": [
+								"{{user_ip}}"
+							]
+						},
+						"description": "docker_ip git_ecomarkers_1\nuse that ip\ncurl request imported as this, removed newlines and whitespace"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Register Lowuser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// calling twice will return null"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"url = pm.environment.get('user_ip');",
+									"console.log('user-service ip: ' + url);",
+									"if (url === undefined) {",
+									"    throw 'wrong environment, use file-service';",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"query\":\"mutation {register( input:{ fname:\\\"test first name\\\", lname:\\\"test last name\\\", email:\\\"lowuser@test.com\\\", password:\\\"ptest\\\", company:\\\"best company\\\"})}\"}"
+						},
+						"url": {
+							"raw": "{{user_ip}}",
+							"host": [
+								"{{user_ip}}"
+							]
+						},
+						"description": null
+					},
+					"response": []
+				},
+				{
+					"name": "3. Login admin and set token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"res = JSON.parse(responseBody);",
+									"pm.environment.set(\"token\", res.data.login.jwt);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"query\":\"mutation {login(input:{email:\\\"admin@test.com\\\", password:\\\"ptest\\\"}) { jwt refresh } }\"}\n"
+						},
+						"url": {
+							"raw": "{{user_ip}}",
+							"host": [
+								"{{user_ip}}"
+							]
+						},
+						"description": null
+					},
+					"response": []
+				},
+				{
+					"name": "4. Admin create location",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"console.log(jsonData);",
+									"",
+									"if (jsonData.data.createLocation !== null) {",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"",
+									"    pm.test(\"Location Created Successfully\", function () {",
+									"        pm.expect(jsonData.data.createLocation.name).to.eql(pm.environment.get('location'));",
+									"    });",
+									"    ",
+									"    pm.environment.set(\"location_id\", jsonData.data.createLocation.id);",
+									"",
+									"    console.log(\"[I] create location: No errors\");",
+									"}",
+									"else { // errors",
+									"",
+									"    if (jsonData.errors[0].name === \"ForbiddenError\") {",
+									"        console.log(\"[I] create location: User is not admin\");",
+									"    }",
+									"    if (jsonData.errors[0].name === \"ValidationError\") {",
+									"        console.log(\"[I] create location: Location name already exists\");",
+									"    }",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"query\":\"mutation { createLocation(input:\\\"{{location}}\\\") { id name company { id }}}\"}\n"
+						},
+						"url": {
+							"raw": "{{user_ip}}",
+							"host": [
+								"{{user_ip}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "5. Admin approves lowuser to location",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"console.log(jsonData);",
+									"",
+									"if (jsonData.data.approveUser !== null) {",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"    ",
+									"    pm.test(\"Lowuser Approved Successfully\", function () {",
+									"        pm.expect(jsonData.data.approveUser.email).to.eql('lowuser@test.com');",
+									"    });",
+									"    console.log(\"[I] approve user: No errors\");",
+									"}",
+									"",
+									"else {",
+									"    if (jsonData.errors[0].name === \"ForbiddenError\") {",
+									"        console.log(\"[I] approve usern: User is not admin\");",
+									"    }",
+									"",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"query\":\"mutation {approveUser(id:2, input:{ permission: ACTIVE locations:[{id:1, permission:WRITE}]}) {id email}}\"}\n"
+						},
+						"url": {
+							"raw": "{{user_ip}}",
+							"host": [
+								"{{user_ip}}"
+							]
+						},
+						"description": null
+					},
+					"response": []
+				},
+				{
+					"name": "6. Login lowuser and set token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"res = JSON.parse(responseBody);",
+									"pm.environment.set(\"token\", res.data.login.jwt);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"query\":\"mutation {login(input:{email:\\\"lowuser@test.com\\\", password:\\\"ptest\\\"}) { jwt refresh } }\"}\n"
+						},
+						"url": {
+							"raw": "{{user_ip}}",
+							"host": [
+								"{{user_ip}}"
+							]
+						},
+						"description": null
+					},
+					"response": []
+				},
+				{
+					"name": "ME after setting either token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"console.log(jsonData);",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"query\":\"query {me {id email company{id} locations{id permission} permission}}\"}\n"
+						},
+						"url": {
+							"raw": "{{user_ip}}",
+							"host": [
+								"{{user_ip}}"
+							]
+						},
+						"description": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "image upload",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"res = JSON.parse(responseBody);",
+							"pm.environment.set(\"uuid\", res.token);",
+							"",
+							"console.log(responseBody); // ctrl + alt + c for console",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"url = pm.environment.get('image_ip');",
+							"console.log('image-service ip: ' + url);",
+							"if (url === undefined) {",
+							"    throw 'wrong environment, use image-service';",
+							"}"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"description": "",
+							"type": "file",
+							"src": "kittens.jpg"
+						},
+						{
+							"key": "location",
+							"value": "{{location}}",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/upload",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"upload"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "test - image upload - wrong file type",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"value": "",
+							"type": "file"
+						},
+						{
+							"key": "location",
+							"value": "{{location}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/upload",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"upload"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "test - image upload - no location",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"value": "",
+							"description": "",
+							"type": "file"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/upload",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"upload"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "test - image upload - no image",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "location",
+							"value": "{{location}}",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/upload",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"upload"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "test - image upload - no auth header",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"value": "",
+							"description": "",
+							"type": "file"
+						},
+						{
+							"key": "location",
+							"value": "{{location}}",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/upload",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"upload"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "test - image upload - invalid auth header",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "TEST_INVALID_TOKEN",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"value": "",
+							"type": "file"
+						},
+						{
+							"key": "location",
+							"value": "{{location}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/upload",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"upload"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "download image",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"value": "",
+							"type": "file"
+						},
+						{
+							"key": "location",
+							"value": "{{location}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/download?image={{uuid}}&access_token={{token}}",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"download"
+					],
+					"query": [
+						{
+							"key": "image",
+							"value": "{{uuid}}",
+							"equals": true
+						},
+						{
+							"key": "access_token",
+							"value": "{{token}}",
+							"equals": true
+						}
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "test - download - invalid access_token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"value": "",
+							"type": "file"
+						},
+						{
+							"key": "location",
+							"value": "{{location}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/download?image={{uuid}}&access_token={{token}}",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"download"
+					],
+					"query": [
+						{
+							"key": "image",
+							"value": "{{uuid}}",
+							"equals": true
+						},
+						{
+							"key": "access_token",
+							"value": "{{token}}",
+							"equals": true
+						}
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "test - download - auth header but no access_token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"value": "",
+							"type": "file"
+						},
+						{
+							"key": "location",
+							"value": "{{location}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/download?image={{uuid}}",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"download"
+					],
+					"query": [
+						{
+							"key": "image",
+							"value": "{{uuid}}",
+							"equals": true
+						}
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "test - download - no access_token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"value": "",
+							"type": "file"
+						},
+						{
+							"key": "location",
+							"value": "{{location}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/download?image={{uuid}}",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"download"
+					],
+					"query": [
+						{
+							"key": "image",
+							"value": "{{uuid}}",
+							"equals": true
+						}
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "test - download - empty access_token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"value": "",
+							"type": "file"
+						},
+						{
+							"key": "location",
+							"value": "{{location}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/download?image={{uuid}}&access_token=",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"download"
+					],
+					"query": [
+						{
+							"key": "image",
+							"value": "{{uuid}}",
+							"equals": true
+						},
+						{
+							"key": "access_token",
+							"value": "",
+							"equals": true
+						}
+					]
+				},
+				"description": null
+			},
+			"response": []
+		},
+		{
+			"name": "test - download - no image param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"value": "",
+							"type": "file"
+						},
+						{
+							"key": "location",
+							"value": "{{location}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{image_ip}}/api/v1/image/download",
+					"host": [
+						"{{image_ip}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"image",
+						"download"
+					]
+				},
+				"description": null
+			},
+			"response": []
+		}
+	]
+}
