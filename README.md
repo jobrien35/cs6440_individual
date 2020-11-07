@@ -11,3 +11,13 @@ python3.7 -m venv venv
 pip install -r requirements.txt
 # pip install wheel # if bdist_wheel errors
 ```
+
+# Local dev
+
+Run with heroku cli
+
+```
+heroku login
+heroku local
+# heroku local will parse your .env file for any config vars
+```
