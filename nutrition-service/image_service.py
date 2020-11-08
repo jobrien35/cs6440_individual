@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from flask.views import MethodView
-from backported.api_responses import api_error_response, api_error_response
+from backported.api_responses import api_success_response, api_error_response
 from endpoints.version_1 import Upload_Image_V1, Download_Image_V1
 
 
