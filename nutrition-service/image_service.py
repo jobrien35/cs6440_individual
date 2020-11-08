@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from backported.api_responses import api_error_response
+from backported.api_responses import api_error_response, api_error_response
 from endpoints.version_1 import Upload_Image_V1, Download_Image_V1
 
 
@@ -25,6 +25,17 @@ def unsupported_method(error):
     return api_error_response('Endpoint does not support this method',
                               'UnsupportedMethodError', NO_METHOD)
 
+
+class Static(MethodView):
+    def get(self):
+        return api_success_response("hello world")
+
+
+
+app.add_url_rule(  # serve static js from here or static dir, or something with smart launcher
+    '/',
+    view_func=Static.as_view('root')
+)  # GET
 
 app.add_url_rule(  # image posted here
     '{0}/upload'.format(VERSION_1),
