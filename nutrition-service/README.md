@@ -1,12 +1,12 @@
-# Image-service
+# Nutrition-service
 
-This service handles image upload and download for the EcoMarker app
+This service handles nutrition upload and download for the app
 
 ## Running the service
 
 To build and run:
 
-* `docker volume create --name=image_fs`
+* `docker volume create --name=nutrition_fs`
 
 `docker-compose build`
 
@@ -28,34 +28,26 @@ Sync keys between all the services, file-service/runme.sh formats them properly.
 
 # Testing via postman
 
-* run the image-service
-
-To run the tests you need a valid jwt from the user-service, used in the environment as `token` and this is done manually by hitting /graphiql on the user-service docker ip, and writing out the mutation in `tests/gql_queries.txt`
-
-* run the user-service
+* run the nutrition-service
 
 Then import the postman environment/collection and modify the environment variables accordingly for each docker ip you have running.  You can find the IPs by running:
 
 * `docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)`
 
-Start with choosing the image to upload into the body of the upload request, and the resulting img_name is returned/used/set as `uuid` to not be confused with jwt token used in the auth header
+Start with choosing the image to upload into the body of the upload request, and the resulting img_name is returned/used/set as `uuid`
 
 Examine the pre-request scripts and tests to determine what environment variables are used/required for each test/workflow
 
 * The collection valid endpoint queries are labeled plainly
-* Any tests are prefixed with `test - <endpoint> - <case>
-
-If you want to automate setting the jwt in the postman environment, read this section in the file-service README for configuration files
+* Any tests are prefixed with `test - <endpoint> - <case>`
 
 
 # Development setup/configuring python dependencies
 
-## Install a Python 3.6.2 Virtual environment
-* `python3 -m venv *virtual env folder name*`
+## Install a Python 3.7.X Virtual environment
+* `python3.7 -m venv *virtual env folder name*`
 
 ## Activate the virtual environment
-* Windows:
-  * run `venv/Scripts/activate.bat`
 * Unix:
   * `source venv/bin/activate`
 

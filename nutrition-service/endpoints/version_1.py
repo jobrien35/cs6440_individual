@@ -1,5 +1,4 @@
 from backported.api_responses import api_error_response, api_success_response, codes
-from backported import jwtparser
 
 from flask import request, send_file, safe_join
 from werkzeug.utils import secure_filename
@@ -48,7 +47,7 @@ class Upload_Image_V1(MethodView):
         Authorization via request header 'Authorization' only
 
         Posted image via form-data to be compressed and saved to file system
-        Posted location via form-data used to verify jwt and save file
+        Posted location via form-data used to verify and save file
 
         RETURNS location_img_name.extension or error response
         """
@@ -69,11 +68,6 @@ class Upload_Image_V1(MethodView):
             return api_error_response('Invalid image name', 'validationError', codes['ERROR'])
         if not check_image(image.filename):
             return api_error_response('Invalid extension', 'validationError', codes['ERROR'])
-
-        jw = jwtparser.JWTParser(request, location)
-        if jw.ERR:
-            return api_error_response(jw.message, jw.ERR[0], codes[jw.ERR[1]])
-        print('[I] auth complete')
 
         img_uuid = str(uuid.uuid4())
         token = '{0}_{1}'.format(location, img_uuid)
@@ -117,12 +111,6 @@ class Download_Image_V1(MethodView):
         print('[I] image requested: {0}'.format(name))
         imageName = secure_filename(name)
         location = name.split('_')[0]
-
-        jw = jwtparser.JWTParser(request, location, query_param=True)
-
-        if jw.ERR:
-            return api_error_response(jw.message, jw.ERR[0], codes[jw.ERR[1]])
-        print('[I] auth complete')
 
         fileLocation = safe_join(UPLOAD_DIRECTORY, imageName)
         print('[I]     filename: {0}'.format(imageName))

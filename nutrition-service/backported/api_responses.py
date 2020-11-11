@@ -2,16 +2,10 @@ from flask import make_response
 import json
 
 
-
-
 """
-
 Standardized responses for all endpoints to communicate with the frontend
 and return json with accompanying http code and data
-
 """
-
-
 
 
 codes = {
@@ -23,8 +17,6 @@ codes = {
     'GONE'      : 410,
     'CRITERROR' : 500,
 }
-
-
 
 
 def api_error_response(message, errName, code):

@@ -1,1 +1,1 @@
-web: python nutrition-service/image_service.py
+web: python nutrition-service/nutrition_service.py

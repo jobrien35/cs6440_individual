@@ -3,7 +3,7 @@ version: '3.1'
 services:
   image:
     build: .
-    command: python image_service.py
+    command: python nutrition_service.py
     ports:
       - "3000:3000"
     env_file:
@@ -17,7 +17,7 @@ services:
       # prod
       PUBLIC_KEY: ${PUBLIC_KEY_STR}
     volumes:
-      - 'image_fs:/images/uploads'
+      - 'nutrition_fs:/nutrition/uploads'
 
 
 volumes:

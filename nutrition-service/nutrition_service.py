@@ -6,8 +6,8 @@ from endpoints.version_1 import Upload_Image_V1, Download_Image_V1
 
 
 
-UPLOAD_DIRECTORY = '/images/uploads'
-VERSION_1 = '/api/v1/image'
+UPLOAD_DIRECTORY = '/nutrition/uploads'
+VERSION_1 = '/api/v1/nutrition'
 NO_METHOD = 405
 
 
@@ -38,13 +38,13 @@ app.add_url_rule(  # serve static js from here or static dir, or something with 
     view_func=Static.as_view('root')
 )  # GET
 
-app.add_url_rule(  # image posted here
+app.add_url_rule(  # nutrition posted here
     '{0}/upload'.format(VERSION_1),
     view_func=Upload_Image_V1.as_view('upload')
 )  # POST
 
 
-app.add_url_rule(  # get image from fs
+app.add_url_rule(  # get nutrition from fs
     '{0}/download'.format(VERSION_1),
     view_func=Download_Image_V1.as_view('download')
 )  # GET
