@@ -8,6 +8,7 @@ colorama==0.4.4
 commonmark==0.9.1
 cryptography==2.1.4
 Flask==0.12.2
+Flask-Cors==3.0.9
 idna==2.6
 importlib-metadata==2.0.0
 itsdangerous==0.24

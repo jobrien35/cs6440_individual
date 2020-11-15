@@ -1,9 +1,9 @@
 import os
+from flask_cors import CORS
 from flask import Flask
 from flask.views import MethodView
 from backported.api_responses import api_success_response, api_error_response
 from endpoints.version_1 import Upload_Image_V1, Download_Image_V1
-
 
 
 UPLOAD_DIRECTORY = '/nutrition/uploads'
@@ -53,4 +53,4 @@ app.add_url_rule(  # get nutrition from fs
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT')))
+    CORS(app.run(host='0.0.0.0', port=int(os.environ.get('PORT'))))
