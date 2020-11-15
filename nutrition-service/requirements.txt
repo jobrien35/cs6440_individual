@@ -19,7 +19,6 @@ MarkupSafe==1.1.1
 measurement==3.2.0
 mpmath==1.1.0
 myfitnesspal==1.16.1
-pkg-resources==0.0.0
 pprintpp==0.4.0
 pycparser==2.18
 Pygments==2.7.2
