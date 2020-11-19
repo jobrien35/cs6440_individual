@@ -1,5 +1,5 @@
 import os
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from flask import Flask
 from flask.views import MethodView
 from backported.api_responses import api_success_response, api_error_response
@@ -28,6 +28,7 @@ def unsupported_method(error):
 
 
 class Static(MethodView):
+    @cross_origin()
     def get(self):
         return api_success_response("hello world")
 
