@@ -11,19 +11,28 @@ and return json with accompanying http code and data
 codes = {
     'SUCCESS'   : 200,
     'CREATED'   : 201,
-    'ERROR'     : 400,
+    'ERROR'     : 422,
     'NOAUTH'    : 401,
     'NOPERMS'   : 403,
+    'NOMETHOD'  : 405,
     'GONE'      : 410,
     'CRITERROR' : 500,
 }
 
 
-def api_error_response(message, errName, code):
+def format_response(res, code):
+    resp = make_response(json.dumps(res), code)
+    resp.headers['Content-Type'] = 'application/json'
+    return resp
+
+
+def api_error_response(message, errName='ValidationError', code=codes['ERROR']):
     """
     take in message and http error code
     for frontend to have standardized responses
     https://github.com/thebigredgeek/apollo-errors
+
+    Only errors have empty data field, success is just message and code
 
     RETURN appolo-error stylized json for frontend
     """
@@ -33,9 +42,7 @@ def api_error_response(message, errName, code):
         'message': message,
         'name': errName
     }]
-    resp = make_response(json.dumps(err), code)
-    resp.headers['Content-Type'] = 'application/json'
-    return resp
+    return format_response(err, code)
 
 
 def api_success_response(message, args={}, code=codes['SUCCESS']):
@@ -47,6 +54,4 @@ def api_success_response(message, args={}, code=codes['SUCCESS']):
     win = {}
     win['message'] = message
     win.update(args)
-    resp = make_response(json.dumps(win), code)
-    resp.headers['Content-Type'] = 'application/json'
-    return resp
+    return format_response(win, code)

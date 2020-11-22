@@ -3,90 +3,76 @@ from backported.api_responses import api_error_response, api_success_response, c
 from flask import request, send_file, safe_join
 from werkzeug.utils import secure_filename
 from flask.views import MethodView
-#from PIL import Image
+
+import myfitnesspal
 
 import uuid
 import os
 
+# remove leading slash for non-docker deployments
+UPLOAD_DIRECTORY = "nutrition/uploads"
+EXTENSIONS = set(['json'])
 
 
+class Upload_FHIR_V1(MethodView):
 
-UPLOAD_DIRECTORY = "/images/uploads"
-EXTENSIONS = set(['jpg', 'jpeg', 'png'])
-
-
-
-
-def check_image(filename):
-    return '.' in filename and filename.split('.', 1)[1].lower() in EXTENSIONS
-
-
-class Upload_Image_V1(MethodView):
-    def compress_image(self, image_path):
-        """
-        save smaller images to decrease load times on mobile
-
-        resampling filter methods
-        https://pillow.readthedocs.io/en/5.1.x/handbook/concepts.html?highlight=NEAREST#filters-comparison-table
-        thumbnail()
-        https://pillow.readthedocs.io/en/5.1.x/reference/Image.html#PIL.Image.Image.thumbnail
-        save()
-        https://pillow.readthedocs.io/en/5.1.x/reference/Image.html#PIL.Image.Image.save
-        """
-        #fd = Image.open(image_path)
-        #dimensions = (640, 480)  # x,y
-        #fd.thumbnail(size=dimensions, resample=Image.HAMMING)
-        #fd.save(image_path)  # default quality is 75 out of 95 for jpg, png does not support quality
-        print('upload')
+    def format_response(self, msg, token, code=codes['SUCCESS']):
+        args = {'token': token}
+        return api_success_response(msg, args, code)
 
     def post(self):
         """
 
-        Users can only access if user has write/admin permissions for given location
+        Upload FHIR data to be posted to FHIR r4 test server
+        Assuming frontend already parsed the observations beforehand and updated the graphs there
 
-        Authorization via request header 'Authorization' only
-
-        Posted image via form-data to be compressed and saved to file system
-        Posted location via form-data used to verify and save file
+        Posted fd via form-data to be uploaded
 
         RETURNS location_img_name.extension or error response
         """
 
         data = request.form.to_dict(flat=False)
 
-        if 'image' not in request.files:
-            return api_error_response('No image provided', 'ValidationError', codes['ERROR'])
-        if 'location' not in data:
-            return api_error_response('No location provided', 'validationError', codes['ERROR'])
+        if 'fd' not in request.files:
+            return api_error_response('No fhir_file provided')
+        if request.files is None:
+            return api_error_response('no file for parameter')
 
         print('=' * 25)
-        print('[I] Upload_Image -> post()')
-        image = request.files['image']
-        location = data['location'][0]
+        print('[I] Upload_FHIR_V1 -> post()')
+        fhir_file = request.files['fd']
+        name = fhir_file.filename.lower()
 
-        if image.filename == '':
-            return api_error_response('Invalid image name', 'validationError', codes['ERROR'])
-        if not check_image(image.filename):
-            return api_error_response('Invalid extension', 'validationError', codes['ERROR'])
+        if name == '' or '.' not in name:
+            return api_error_response('Invalid file name')
 
-        img_uuid = str(uuid.uuid4())
-        token = '{0}_{1}'.format(location, img_uuid)
-        img_name = token + "." + image.filename.split('.', 1)[1].lower()
-        filename = secure_filename(img_name)
+        name_parts, extension = name.split('.',  1)
+        first, last, uuid = name_parts.split('_', 2)
+        print(f'first: {first} last: {last} uuid: {uuid}')
+        if not extension in EXTENSIONS:
+            return api_error_response('Invalid file extension')
+
+
+        filename = secure_filename(name)
         fileLocation = safe_join(UPLOAD_DIRECTORY, filename)
-        image.save(fileLocation)
-        print('[I] image saved')
-        self.compress_image(fileLocation)
-        print('[I] image compressed')
-        print('[I]     img_name: {0}'.format(img_name))
-        print('[I]     filename: {0}'.format(filename))
-        print('[I] fileLocation: {0}'.format(fileLocation))
-        image.close()
-        args = {'token': img_name}
-        return api_success_response('Image uploaded', args, code=codes['CREATED'])
+
+        if not os.path.isdir(UPLOAD_DIRECTORY):
+            os.makedirs(UPLOAD_DIRECTORY)
+
+        if os.path.isfile(fileLocation):
+            return self.format_response(f'File already saved {fileLocation}', filename)
+
+        # flask file method
+        fhir_file.save(fileLocation)
+        fhir_file.close()
+        print('[I] fhir_file saved')
+        print(f'[I]     fhir_file: {fhir_file}')
+        print(f'[I]     filename: {filename}')
+        print(f'[I] fileLocation: {fileLocation}')
+        return self.format_response('Upload complete', filename, codes['CREATED'])
 
 
-class Download_Image_V1(MethodView):
+class Download_FHIR_V1(MethodView):
     def get(self):
         """
 
@@ -94,29 +80,39 @@ class Download_Image_V1(MethodView):
 
         Authorization via query_parameter 'access_token' only
 
-        Retrieves the requested image by location_img_name.extension, same returned from
+        Retrieves the requested fhir file by first_last_uuid.extension, same returned from
         the post request originally
 
-        RETURNS the image requested or error response
+        RETURNS the file requested or error response
         """
 
-        if 'image' not in request.args:
-            return api_error_response('No image requested', 'ValidationError', codes['ERROR'])
-        if request.args.get('file') == '':
-            return api_error_response('Invalid file name', 'ValidationError', codes['ERROR'])
+        if 'fd' not in request.args:
+            return api_error_response('No data requested')
+        if request.args.get('fd') == '':
+            return api_error_response('Invalid file name')
 
         print('=' * 25)
-        print('[I] Download_Image -> get()')
-        name = request.args.get('image')
-        print('[I] image requested: {0}'.format(name))
+        print('[I] Download_FHIR -> get()')
+        name = request.args.get('fd')
+        print(f'[I] file requested: {name}')
         imageName = secure_filename(name)
         location = name.split('_')[0]
 
         fileLocation = safe_join(UPLOAD_DIRECTORY, imageName)
-        print('[I]     filename: {0}'.format(imageName))
-        print('[I] fileLocation: {0}'.format(fileLocation))
+        print(f'[I]     filename: {imageName}')
+        print(f'[I] fileLocation: {fileLocation}')
         if os.path.isfile(fileLocation):
             mimetype = 'image/' + imageName.split('.', 1)[1].lower()
             return send_file(safe_join(UPLOAD_DIRECTORY, imageName), mimetype=mimetype)
         else:
-            return api_error_response('No image found', 'InternalServerError', codes['CRITERROR'])
+            return api_error_response('No file found', 'InternalServerError', codes['CRITERROR'])
+
+
+class Get_Mfp_V1(MethodView):
+    def get(self):
+
+        client = myfitnesspal.Client('jobrien35', password='Pinto43212020gt')
+
+        day = client.get_date(2013, 3, 2)
+        print(day)
+        return api_success_response(day.meals)

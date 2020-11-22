@@ -1,0 +1,39 @@
+{
+	"info": {
+		"_postman_id": "3fc10379-e170-47a3-bafa-e7ab12a398a8",
+		"name": "cs6440-fhir",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "post_bundle",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/fhir+json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "../../lib/fhir/Lindsey52_Ledner144_5791f6fc-11ab-e632-5fd7-3135662b1b44.json"
+					}
+				},
+				"url": {
+					"raw": "https://r4.smarthealthit.org",
+					"protocol": "https",
+					"host": [
+						"r4",
+						"smarthealthit",
+						"org"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
