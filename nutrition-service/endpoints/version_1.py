@@ -1,13 +1,16 @@
 from backported.api_responses import api_error_response, api_success_response, codes
 
+from datetime import timedelta, date
 from flask import request, send_file, safe_join
 from werkzeug.utils import secure_filename
 from flask.views import MethodView
+import uuid
+import os
 
 import myfitnesspal
 
-import uuid
-import os
+
+
 
 # remove leading slash for non-docker deployments
 UPLOAD_DIRECTORY = "nutrition/uploads"
@@ -51,7 +54,6 @@ class Upload_FHIR_V1(MethodView):
         print(f'first: {first} last: {last} uuid: {uuid}')
         if not extension in EXTENSIONS:
             return api_error_response('Invalid file extension')
-
 
         filename = secure_filename(name)
         fileLocation = safe_join(UPLOAD_DIRECTORY, filename)
@@ -108,11 +110,53 @@ class Download_FHIR_V1(MethodView):
             return api_error_response('No file found', 'InternalServerError', codes['CRITERROR'])
 
 
+def daterange(start_date, end_date):
+    for n in range(int((end_date - start_date).days)):
+        yield start_date + timedelta(n)
+
 class Get_Mfp_V1(MethodView):
-    def get(self):
+    def post(self):
 
-        client = myfitnesspal.Client('jobrien35', password='Pinto43212020gt')
+        data = request.form.to_dict(flat=False)
 
-        day = client.get_date(2013, 3, 2)
-        print(day)
-        return api_success_response(day.meals)
+        if 'u' not in data:
+            return api_error_response('No user provided')
+        if 'p' not in data:
+            return api_error_response('No pass provided')
+        if 'start' not in data:
+            return api_error_response('No start date provided')
+        if 'end' not in data:
+            return api_error_response('No end date provided')
+
+        username = data['u']
+        password = data['p']
+        start = data['start'][0]
+        end = data['end'][0]
+
+        start_y, start_m, start_d = start.split('-')
+        end_y, end_m, end_d = end.split('-')
+
+        start_y = int(start_y)
+        start_m = int(start_m)
+        start_d = int(start_d)
+        end_y = int(end_y)
+        end_m = int(end_m)
+        end_d = int(end_d)
+
+        print(start_y)
+        print(start_m)
+        print(start_d)
+        client = myfitnesspal.Client(username, password=password)
+
+
+        start_date = date(start_y, start_m, start_d)
+        end_date = date(end_y, end_m, end_d)
+        for single_date in daterange(start_date, end_date):
+            print(single_date)
+            print(type(single_date))
+
+            day = client.get_date(single_date)
+            print(day)
+        print(client.get_measurements())
+        #print(dir(client))
+        return api_success_response('mfp done')
