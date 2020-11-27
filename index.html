@@ -11,41 +11,19 @@
   <div class="grid-container">
     <header class="header">
       <div>
-        Patient Name:
-        <span class="banner-value" id="patient_name">..</span>
-        Gender:
-        <span class="banner-value" id="gender">..</span>
-        DOB:
-        <span class="banner-value" id="dob">..</span>
+        Patient ID:
+        <span class="banner-value" id="patient_id">..</span>
       </div>
     </header>
 
     <main class="main">
       <div class="main-overview">
-        <div class="small-card">
-          <div>Height</div>
-          <div class="ob-value" id="height">undefined</div>
+        <div class="small-card" style="justify-content:flex-start;">
+          Upload FHIR File
+            <input class="annotation-box" style="width:50%; background:none; border:none;" type=file id="fhir_file"/>
+            <button class="annotation-button" id="add_fhir">Upload</button>
         </div>
-        <div class="small-card">
-          <div>Weight</div>
-          <div class="ob-value" id="weight">undefined</div>
-        </div>
-        <div class="small-card">
-          <div>Systolic Blood Pressure</div>
-          <div class="ob-value" id="sys">undefined</div>
-        </div>
-        <div class="small-card">
-          <div>Diastolic Blood Pressure</div>
-          <div class="ob-value" id="dia">undefined</div>
-        </div>
-        <div class="small-card">
-          <div>LDL</div>
-          <div class="ob-value" id="ldl">undefined</div>
-        </div>
-        <div class="small-card">
-          <div>HDL</div>
-          <div class="ob-value" id="hdl">undefined</div>
-        </div>
+
       </div>
 
 
@@ -65,6 +43,19 @@
             <input class="annotation-box" placeholder="mg" type=number id="potassium_input"/>
             <button class="annotation-button" id="add_potassium">Add</button>
           </span>
+
+          <div class="title" style="padding-top: 5px">
+          </div>
+          Systolic
+          <span>
+            <input class="annotation-box" placeholder="mm Hg" type="number" id="systolic_input"/>
+          </span>
+
+          Diastolic
+          <span>
+            <input class="annotation-box" placeholder="mm Hg" type=number id="diastolic_input"/>
+          </span>
+            <button class="annotation-button" id="add_bp">Add BP</button>
         </div>
 
         <div class="card">

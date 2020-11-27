@@ -101,7 +101,6 @@ body {
   padding: 24px;
   padding-bottom: 24px;
   box-sizing: border-box;
-
 }
 
 .annotation-box {
@@ -113,7 +112,7 @@ body {
   background: #f1f1f1;
 }
 
-.annotation-button{
+.annotation-button {
   float: left;
   width: 20%;
   padding: 10px;

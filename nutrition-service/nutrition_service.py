@@ -55,7 +55,7 @@ app.add_url_rule(  # get nutrition from fs
 app.add_url_rule(  # get nutrition from myfitnesspal
     f'{VERSION_1}/mfp',
     view_func=Get_Mfp_V1.as_view('mfp')
-)  # GET
+)  # POST
 
 
 if __name__ == "__main__":
