@@ -4,6 +4,7 @@ from datetime import timedelta, date
 from flask import request, send_file, safe_join
 from werkzeug.utils import secure_filename
 from flask.views import MethodView
+import requests
 import uuid
 import os
 
@@ -12,7 +13,7 @@ import myfitnesspal
 
 
 
-# remove leading slash for non-docker deployments
+# removed leading slash for non-docker deployments "/n"
 UPLOAD_DIRECTORY = "nutrition/uploads"
 EXTENSIONS = set(['json'])
 
@@ -27,17 +28,21 @@ class Upload_FHIR_V1(MethodView):
         """
 
         Upload FHIR data to be posted to FHIR r4 test server
-        Assuming frontend already parsed the observations beforehand and updated the graphs there
+
+        Return patient id from r4 server so frontend can then get and parse observations from server
 
         Posted fd via form-data to be uploaded
 
         RETURNS location_img_name.extension or error response
         """
 
-        data = request.form.to_dict(flat=False)
+        data = request.form.to_dict(flat=False)        
 
+        #print(request.get_json())
+
+        #print('name: ' + request.form.name)
         if 'fd' not in request.files:
-            return api_error_response('No fhir_file provided')
+            return api_error_response('No fd provided')
         if request.files is None:
             return api_error_response('no file for parameter')
 
@@ -50,8 +55,9 @@ class Upload_FHIR_V1(MethodView):
             return api_error_response('Invalid file name')
 
         name_parts, extension = name.split('.',  1)
-        first, last, uuid = name_parts.split('_', 2)
-        print(f'first: {first} last: {last} uuid: {uuid}')
+        # synthea does first_last_uuid.json
+        # first, last, uuid = name_parts.split('_', 2)
+        # print(f'first: {first} last: {last} uuid: {uuid}')
         if not extension in EXTENSIONS:
             return api_error_response('Invalid file extension')
 
@@ -77,10 +83,6 @@ class Upload_FHIR_V1(MethodView):
 class Download_FHIR_V1(MethodView):
     def get(self):
         """
-
-        Users can access with any ADMIN/ACTIVE permissions
-
-        Authorization via query_parameter 'access_token' only
 
         Retrieves the requested fhir file by first_last_uuid.extension, same returned from
         the post request originally
@@ -111,11 +113,117 @@ class Download_FHIR_V1(MethodView):
 
 
 def daterange(start_date, end_date):
+    """ https://stackoverflow.com/questions/1060279/iterating-through-a-range-of-dates-in-python """
     for n in range(int((end_date - start_date).days)):
         yield start_date + timedelta(n)
 
+bundle = {
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": []
+}
+
+sodium_entry = {
+  "fullUrl": "urn:uuid:uuid_here",
+  "resource": {
+    "resourceType": "Observation",
+    "id": "uuid_here",
+    "status": "final",
+    "category": [
+      {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+            "code": "laboratory",
+            "display": "laboratory"
+          }
+        ]
+      }
+    ],
+    "code": {
+      "coding": [
+        {
+          "system": "http://loinc.org",
+          "code": "81011-9",
+          "display": "Sodium intake 24 hour Estimated"
+        }
+      ],
+      "text": "Sodium intake 24 hour Estimated"
+    },
+    "subject": {
+      "reference": "pid_here"
+    },
+    "valueQuantity": {
+      "value": 0,
+      "unit": "g",
+      "system": "http://unitsofmeasure.org",
+      "code": "g"
+    }
+  },
+  "request": {
+    "method": "POST",
+    "url": "Observation"
+  }
+}
+
+potassium_entry = {
+      "fullUrl": "urn:uuid:a_uuid_here",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "a_uuid_here",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "81010-1",
+              "display": "Potassium intake 24 hour Estimated"
+            }
+          ],
+          "text": "Potassium intake 24 hour Estimated"
+        },
+        "subject": {
+          "reference": "pid_here"
+        },
+        "valueQuantity": {
+          "value": 0,
+          "unit": "g",
+          "system": "http://unitsofmeasure.org",
+          "code": "g"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    }
+
+
+
+
+
 class Get_Mfp_V1(MethodView):
     def post(self):
+        """
+        u - username for vendor
+        p - password for vendor
+        start - start date or beginning date to request from vendor
+        end - end date to stop requesting nutrition data from vendor
+        pid - fhir patient id to add observations to
+
+        returns list of entries to be graphed
+        """
 
         data = request.form.to_dict(flat=False)
 
@@ -132,6 +240,10 @@ class Get_Mfp_V1(MethodView):
         password = data['p']
         start = data['start'][0]
         end = data['end'][0]
+        pid = None
+        if 'pid' in data:
+            # if pid provided, add to fhir server
+            pid = data['pid']
 
         start_y, start_m, start_d = start.split('-')
         end_y, end_m, end_d = end.split('-')
@@ -143,20 +255,24 @@ class Get_Mfp_V1(MethodView):
         end_m = int(end_m)
         end_d = int(end_d)
 
-        print(start_y)
-        print(start_m)
-        print(start_d)
-        client = myfitnesspal.Client(username, password=password)
+        #print(start_y)
+        #print(start_m)
+        #print(start_d)
 
+        client = myfitnesspal.Client(username, password=password)
 
         start_date = date(start_y, start_m, start_d)
         end_date = date(end_y, end_m, end_d)
+        new_bundle = bundle
         for single_date in daterange(start_date, end_date):
+            sodium_uuid
+            potassium_uuid
+
             print(single_date)
             print(type(single_date))
 
             day = client.get_date(single_date)
             print(day)
-        print(client.get_measurements())
+        #print(client.get_measurements())
         #print(dir(client))
         return api_success_response('mfp done')
