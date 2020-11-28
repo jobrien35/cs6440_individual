@@ -267,9 +267,8 @@ class Get_Mfp_V1(MethodView):
         end_m = int(end_m)
         end_d = int(end_d)
 
-        #print(start_y)
-        #print(start_m)
-        #print(start_d)
+        print(f"{start_y}-{start_m}-{start_d} {end_y}-{end_m}-{end_d}")
+        print(f"pid: {pid}")
 
         client = myfitnesspal.Client(username, password=password)
 
@@ -282,7 +281,7 @@ class Get_Mfp_V1(MethodView):
             print(f"sodium: {sodium_uuid} potassium: {potassium_uuid}")
 
             print(single_date)
-            print(type(single_date))
+            #print(type(single_date))
 
             day = client.get_date(single_date)
             print(day)
