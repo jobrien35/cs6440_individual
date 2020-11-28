@@ -68,7 +68,9 @@ class Upload_FHIR_V1(MethodView):
             os.makedirs(UPLOAD_DIRECTORY)
 
         if os.path.isfile(fileLocation):
-            return self.format_response(f'File already saved {fileLocation}', filename)
+            resp = f'File already saved {fileLocation}'
+            print(resp)
+            return self.format_response(resp, filename)
 
         # flask file method
         fhir_file.save(fileLocation)
