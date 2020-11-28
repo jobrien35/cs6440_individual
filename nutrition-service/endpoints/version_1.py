@@ -27,8 +27,12 @@ class Static(MethodView):
 
 class Upload_FHIR_V1(MethodView):
 
-    def format_response(self, msg, token, code=codes['SUCCESS']):
-        args = {'token': token}
+    def post_new_data(self, fhir_file):
+        print(fhir_file)
+        return None
+
+    def format_response(self, msg, pid, code=codes['SUCCESS']):
+        args = {'pid': pid}
         return api_success_response(msg, args, code)
 
     @cross_origin()
@@ -53,6 +57,8 @@ class Upload_FHIR_V1(MethodView):
             return api_error_response('No fd provided')
         if request.files is None:
             return api_error_response('no file for parameter')
+        if 'pid' not in data:
+            return api_error_response('No pid provided')
 
         print('=' * 25)
         print('[I] Upload_FHIR_V1 -> post()')
@@ -75,19 +81,25 @@ class Upload_FHIR_V1(MethodView):
         if not os.path.isdir(UPLOAD_DIRECTORY):
             os.makedirs(UPLOAD_DIRECTORY)
 
-        if os.path.isfile(fileLocation):
+        # uploaded and gui knows pid already
+        if os.path.isfile(fileLocation) and pid != '...':
             resp = f'File already saved {fileLocation}'
             print(resp)
-            return self.format_response(resp, filename)
+            return self.format_response(resp, pid)
+
+        # no real pid from gui, duplicate save anyway
+        print('Posting new r4 data to server')
+        pid = self.post_new_data(fhir_file)
 
         # flask file method
         fhir_file.save(fileLocation)
         fhir_file.close()
         print('[I] fhir_file saved')
-        print(f'[I]     fhir_file: {fhir_file}')
+        print(f'[I]    fhir_file: {fhir_file}')
         print(f'[I]     filename: {filename}')
+        print(f'[I] pid received: {pid}')
         print(f'[I] fileLocation: {fileLocation}')
-        return self.format_response('Upload complete', filename, codes['CREATED'])
+        return self.format_response('Upload complete', pid, codes['CREATED'])
 
 
 class Download_FHIR_V1(MethodView):
@@ -283,15 +295,14 @@ class Get_Mfp_V1(MethodView):
             return api_error_response('No start date provided')
         if 'end' not in data:
             return api_error_response('No end date provided')
+        if 'pid' not in data:
+            return api_error_response('No pid provided')
 
         username = data['u']
         password = data['p']
         start = data['start'][0]
         end = data['end'][0]
-        pid = None
-        if 'pid' in data:
-            # if pid provided, add to fhir server
-            pid = data['pid']
+        pid = data['pid']
 
         start_y, start_m, start_d = start.split('-')
         end_y, end_m, end_d = end.split('-')
