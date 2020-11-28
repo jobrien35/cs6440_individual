@@ -164,6 +164,8 @@ sodium_entry = {
     "subject": {
       "reference": "pid_here"
     },
+    "effectiveDateTime": "2020-03-07T20:53:14-05:00",
+    "issued": "2020-03-07T20:53:14.197-05:00",
     "valueQuantity": {
       "value": 0,
       "unit": "g",
@@ -178,62 +180,87 @@ sodium_entry = {
 }
 
 potassium_entry = {
-      "fullUrl": "urn:uuid:a_uuid_here",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "a_uuid_here",
-        "status": "final",
-        "category": [
+  "fullUrl": "urn:uuid:a_uuid_here",
+  "resource": {
+    "resourceType": "Observation",
+    "id": "a_uuid_here",
+    "status": "final",
+    "category": [
+      {
+        "coding": [
           {
-            "coding": [
-              {
-                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
-                "code": "laboratory",
-                "display": "laboratory"
-              }
-            ]
+            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+            "code": "laboratory",
+            "display": "laboratory"
           }
-        ],
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "81010-1",
-              "display": "Potassium intake 24 hour Estimated"
-            }
-          ],
-          "text": "Potassium intake 24 hour Estimated"
-        },
-        "subject": {
-          "reference": "pid_here"
-        },
-        "valueQuantity": {
-          "value": 0,
-          "unit": "g",
-          "system": "http://unitsofmeasure.org",
-          "code": "g"
-        }
-      },
-      "request": {
-        "method": "POST",
-        "url": "Observation"
+        ]
       }
+    ],
+    "code": {
+      "coding": [
+        {
+          "system": "http://loinc.org",
+          "code": "81010-1",
+          "display": "Potassium intake 24 hour Estimated"
+        }
+      ],
+      "text": "Potassium intake 24 hour Estimated"
+    },
+    "subject": {
+      "reference": "pid_here"
+    },
+    "effectiveDateTime": "2020-03-07T20:53:14-05:00",
+    "issued": "2020-03-07T20:53:14.197-05:00",
+    "valueQuantity": {
+      "value": 0,
+      "unit": "g",
+      "system": "http://unitsofmeasure.org",
+      "code": "g"
     }
+  },
+  "request": {
+    "method": "POST",
+    "url": "Observation"
+  }
+}
 
 
-def populate_entry(entry, entry_uuid, value, pid, convert=False):
+def populate_entry(entry, entry_uuid, entry_date, entry_value, pid):
+    """
+    take in a minimally populated fhir r4 observation dict and populate with any necessary values
+
+    to be appended to bundle entry list afterwards
+
+    """
+
     entry['fullUrl'] = entry_uuid.urn
     entry['resource']['id'] = str(entry_uuid)
-    if convert:
-        value = value/1000 # match units for loinc code for potassium and sodium
-    entry['valueQuantity']['value'] = value
-    entry['subject']['reference'] = pid
+    entry['resource']['subject']['reference'] = pid
+
+    # match units for loinc code for potassium and sodium
+    entry['resource']['valueQuantity']['value'] = entry_value/1000
+
+    converted_date = entry_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+    entry['resource']['effectiveDateTime'] = converted_date
+    entry['resource']['issued'] = converted_date
+
+    print('='*10 + ' entry ' + '='*10)
+    print(entry)
+    print('='*30)
 
     return entry
 
 
 
 class Get_Mfp_V1(MethodView):
+
+    def format_response(self, msg, bundle, pid, code=codes['SUCCESS']):
+        args = {
+            'pid': pid,
+            'bundle': bundle
+        }
+        return api_success_response(msg, args, code)
+
     @cross_origin()
     def post(self):
         """
@@ -284,19 +311,19 @@ class Get_Mfp_V1(MethodView):
         start_date = date(start_y, start_m, start_d)
         end_date = date(end_y, end_m, end_d)
         new_bundle = bundle
-        for single_date in daterange(start_date, end_date):
+        for curr_date in daterange(start_date, end_date):
+            print(curr_date)
             sodium_uuid = uuid.uuid4()
             potassium_uuid = uuid.uuid4()
-            print(f"sodium: {sodium_uuid} potassium: {potassium_uuid}")
-            new_sodium_entry = populate_entry(sodium_entry, uuid.uuid4(),) ###### 
-            new_potassium_entry = potassium_entry
+            print(f"[I] sodium: {sodium_uuid} potassium: {potassium_uuid}")
 
+            resp = client.get_date(curr_date).totals
+            print(resp)
 
-            print(single_date)
-            #print(type(single_date))
+            bundle['entry'].append(populate_entry(sodium_entry, sodium_uuid, curr_date, resp['sodium'], pid))
+            bundle['entry'].append(populate_entry(potassium_entry, potassium_uuid, curr_date, resp['potass.'], pid))
+            #print(type(curr_date))
 
-            day = client.get_date(single_date)
-            print(day)
         #print(client.get_measurements())
         #print(dir(client))
-        return api_success_response('mfp done')
+        return self.format_response('mfp done', bundle, pid)
