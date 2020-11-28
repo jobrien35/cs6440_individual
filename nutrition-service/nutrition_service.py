@@ -3,11 +3,11 @@ run the service with "heroku local" for dev from repo root dir
 """
 
 import os
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from flask import Flask
 from flask.views import MethodView
 from backported.api_responses import api_success_response, api_error_response, codes
-from endpoints.version_1 import Upload_FHIR_V1, Download_FHIR_V1, Get_Mfp_V1
+from endpoints.version_1 import Static, Upload_FHIR_V1, Download_FHIR_V1, Get_Mfp_V1
 
 
 UPLOAD_DIRECTORY = 'nutrition-service/nutrition/uploads'
@@ -26,13 +26,6 @@ def unsupported_method(error):
     """
     return api_error_response('Endpoint does not support this method',
                               errName='UnsupportedMethodError', code=codes['NOMETHOD'])
-
-
-class Static(MethodView):
-    @cross_origin()
-    def get(self):
-        return api_success_response("hello world")
-
 
 
 app.add_url_rule(  # serve static js from here or static dir, or something with smart launcher

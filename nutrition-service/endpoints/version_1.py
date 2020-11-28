@@ -2,6 +2,7 @@ from backported.api_responses import api_error_response, api_success_response, c
 
 from datetime import timedelta, date
 from flask import request, send_file, safe_join
+from flask_cors import cross_origin
 from werkzeug.utils import secure_filename
 from flask.views import MethodView
 import requests
@@ -18,12 +19,19 @@ UPLOAD_DIRECTORY = "nutrition/uploads"
 EXTENSIONS = set(['json'])
 
 
+class Static(MethodView):
+    @cross_origin()
+    def get(self):
+        return api_success_response("hello world")
+
+
 class Upload_FHIR_V1(MethodView):
 
     def format_response(self, msg, token, code=codes['SUCCESS']):
         args = {'token': token}
         return api_success_response(msg, args, code)
 
+    @cross_origin()
     def post(self):
         """
 
@@ -83,6 +91,7 @@ class Upload_FHIR_V1(MethodView):
 
 
 class Download_FHIR_V1(MethodView):
+    @cross_origin()
     def get(self):
         """
 
@@ -216,6 +225,7 @@ potassium_entry = {
 
 
 class Get_Mfp_V1(MethodView):
+    @cross_origin()
     def post(self):
         """
         u - username for vendor
