@@ -312,7 +312,7 @@ class Get_Mfp_V1(MethodView):
         password = data['p']
         start = data['start'][0]
         end = data['end'][0]
-        pid = data['pid']
+        pid = data['pid'][0]
 
         start_y, start_m, start_d = start.split('-')
         end_y, end_m, end_d = end.split('-')
