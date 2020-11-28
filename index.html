@@ -12,16 +12,36 @@
     <header class="header">
       <div>
         Patient ID:
-        <span class="banner-value" id="patient_id">..</span>
+        <span class="banner-value" id="patient_id">...</span>
+      </div>
+      <div>
+        Upload FHIR: 
+        <span><input class="banner-value" style="background:none; border:none;" type=file id="fhir_file"/></span>
       </div>
     </header>
 
     <main class="main">
       <div class="main-overview">
         <div class="small-card" style="justify-content:flex-start;">
-          Upload FHIR File
-            <input class="annotation-box" style="width:50%; background:none; border:none;" type=file id="fhir_file"/>
-            <button class="annotation-button" id="add_fhir">Upload</button>
+          myfitnesspal
+          <span style="padding-left:3%">
+            <input class="annotation-box" placeholder="username" type="string" id="u"/>
+          </span>
+          <span>
+            <input class="annotation-box" placeholder="password" type=password id="p"/>
+          </span>
+
+          Start Date
+          <span>
+            <input class="annotation-box" placeholder="YYYY-MM-DD" type=string id="start"/>
+          </span>
+
+          End Date
+          <span>
+            <input class="annotation-box" placeholder="YYYY-MM-DD" type=string id="end"/>
+          </span>
+
+          <button class="annotation-button" style="width:5%" id="post_mfp">Get</button>
         </div>
 
       </div>
@@ -46,6 +66,7 @@
 
           <div class="title" style="padding-top: 5px">
           </div>
+
           Systolic
           <span>
             <input class="annotation-box" placeholder="mm Hg" type="number" id="systolic_input"/>

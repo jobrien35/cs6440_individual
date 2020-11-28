@@ -277,8 +277,9 @@ class Get_Mfp_V1(MethodView):
         end_date = date(end_y, end_m, end_d)
         new_bundle = bundle
         for single_date in daterange(start_date, end_date):
-            sodium_uuid
-            potassium_uuid
+            sodium_uuid = uuid.uuid4().urn
+            potassium_uuid = uuid.uuid4().urn
+            print(f"sodium: {sodium_uuid} potassium: {potassium_uuid}")
 
             print(single_date)
             print(type(single_date))
