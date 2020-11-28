@@ -6,6 +6,7 @@ from flask_cors import cross_origin
 from werkzeug.utils import secure_filename
 from flask.views import MethodView
 import requests
+import json
 import uuid
 import os
 
@@ -28,8 +29,15 @@ class Static(MethodView):
 class Upload_FHIR_V1(MethodView):
 
     def post_new_data(self, fhir_file):
-        print(fhir_file)
-        return None
+        #print(fhir_file.read())
+        send = json.loads(fhir_file.read())
+        resp = requests.post('https://r4.smarthealthit.org', json=send)
+        #print(resp.json())
+        #return resp.json()
+        for entry in resp.json()['entry']:
+            print(entry['response']['location'])
+            if 'Patient' in entry['response']['location']:
+                return entry['response']['location'].split('/')[1]
 
     def format_response(self, msg, pid, code=codes['SUCCESS']):
         args = {'pid': pid}
@@ -64,6 +72,7 @@ class Upload_FHIR_V1(MethodView):
         print('[I] Upload_FHIR_V1 -> post()')
         fhir_file = request.files['fd']
         name = fhir_file.filename.lower()
+        pid = data['pid'][0]
 
         if name == '' or '.' not in name:
             return api_error_response('Invalid file name')
@@ -83,13 +92,14 @@ class Upload_FHIR_V1(MethodView):
 
         # uploaded and gui knows pid already
         if os.path.isfile(fileLocation) and pid != '...':
-            resp = f'File already saved {fileLocation}'
+            resp = f'File already saved: {fileLocation} valid pid: {pid}'
             print(resp)
             return self.format_response(resp, pid)
 
-        # no real pid from gui, duplicate save anyway
-        print('Posting new r4 data to server')
-        pid = self.post_new_data(fhir_file)
+        # no real pid from gui
+        if pid == '...':
+            print('Posting new r4 data to server to get pid')
+            pid = self.post_new_data(fhir_file)
 
         # flask file method
         fhir_file.save(fileLocation)
