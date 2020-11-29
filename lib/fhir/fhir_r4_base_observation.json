@@ -205,8 +205,8 @@
         "encounter": {
           "reference": "urn:uuid:24beb7e2-db2f-f904-a477-cf04c6b1fdd2"
         },
-        "effectiveDateTime": "2016-07-12T20:22:14-04:00",
-        "issued": "2016-07-12T20:22:14.197-04:00",
+        "effectiveDateTime": "2020-03-07T20:22:14-04:00",
+        "issued": "2020-03-07T20:22:14.197-04:00",
         "component": [
           {
             "code": {
@@ -334,7 +334,7 @@
         "effectiveDateTime": "2020-03-07T20:53:14-05:00",
         "issued": "2020-03-07T20:53:14.197-05:00",
         "valueQuantity": {
-          "value": 4.07,
+          "value": 4.071,
           "unit": "g",
           "system": "http://unitsofmeasure.org",
           "code": "g"
@@ -378,8 +378,8 @@
         "encounter": {
           "reference": "urn:uuid:24beb7e2-db2f-f904-a477-cf04c6b1fdd2"
         },
-        "effectiveDateTime": "2020-03-08T21:53:14-04:00",
-        "issued": "2020-03-08T21:53:14.197-04:00",
+        "effectiveDateTime": "2020-03-09T21:53:14-04:00",
+        "issued": "2020-03-09T21:53:14.197-04:00",
         "valueQuantity": {
           "value": 4.1,
           "unit": "g",
@@ -428,7 +428,7 @@
         "effectiveDateTime": "2020-03-08T21:53:14-04:00",
         "issued": "2020-03-08T21:53:14.197-04:00",
         "valueQuantity": {
-          "value": 4.07,
+          "value": 2.021,
           "unit": "g",
           "system": "http://unitsofmeasure.org",
           "code": "g"
@@ -1256,8 +1256,8 @@
         "encounter": {
           "reference": "urn:uuid:24beb7e2-db2f-f904-a477-cf04c6b1fdd2"
         },
-        "effectiveDateTime": "2020-03-09T21:53:14-04:00",
-        "issued": "2020-03-09T21:53:14.197-04:00",
+        "effectiveDateTime": "2020-03-10T21:53:14-04:00",
+        "issued": "2020-03-10T21:53:14.197-04:00",
         "valueQuantity": {
           "value": 1.5,
           "unit": "g",
@@ -1303,10 +1303,10 @@
         "encounter": {
           "reference": "urn:uuid:24beb7e2-db2f-f904-a477-cf04c6b1fdd2"
         },
-        "effectiveDateTime": "2020-03-09T21:53:14-04:00",
-        "issued": "2020-03-09T21:53:14.197-04:00",
+        "effectiveDateTime": "2020-03-10T21:53:14-04:00",
+        "issued": "2020-03-10T21:53:14.197-04:00",
         "valueQuantity": {
-          "value": 4.07,
+          "value": 3.158,
           "unit": "g",
           "system": "http://unitsofmeasure.org",
           "code": "g"

@@ -1,14 +1,14 @@
 """
 run the service with "heroku local" for dev from repo root dir
 """
-
-import os
-from flask_cors import CORS
-from flask import Flask
-from flask.views import MethodView
 from backported.api_responses import api_success_response, api_error_response, codes
 from endpoints.version_1 import Static, Upload_FHIR_V1, Download_FHIR_V1, Get_Mfp_V1, Post_New_FHIR_R4_Observation
 
+import os
+from flask import Flask
+from flask.views import MethodView
+
+from flask_cors import CORS, cross_origin
 
 UPLOAD_DIRECTORY = 'nutrition/uploads'
 VERSION_1 = '/api/v1/nutrition'
@@ -18,7 +18,7 @@ app = Flask(__name__)
 app.debug = True  # restart server on edits
 app.config['UPLOAD_DIRECTORY'] = UPLOAD_DIRECTORY
 
-
+@cross_origin()
 @app.errorhandler(codes['NOMETHOD'])
 def unsupported_method(error):
     """

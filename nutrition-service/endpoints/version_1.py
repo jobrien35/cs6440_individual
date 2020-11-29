@@ -144,13 +144,12 @@ class Download_FHIR_V1(MethodView):
         fileLocation = safe_join(UPLOAD_DIRECTORY, fname)
         with open(fileLocation, 'w') as f:
             json.dump(fhir_data, f)
-            print('9999 made ' + os.path.abspath(fileLocation))
+            print('[I] created ' + os.path.abspath(fileLocation))
         print(f'[I]     filename: {fname}')
         print(f'[I] fileLocation: {fileLocation}')
         if os.path.isfile(fileLocation):
-            print('9999 found ' + os.path.abspath(fileLocation))
-            mimetype = 'application/fhir+json'
-            return send_file(f'../{fileLocation}', mimetype=mimetype)
+            print('[I] found ' + os.path.abspath(fileLocation))
+            return send_file(f'../{fileLocation}', as_attachment=True, mimetype='application/fhir+json')
         else:
             return api_error_response('No file found', 'InternalServerError', codes['CRITERROR'])
 
