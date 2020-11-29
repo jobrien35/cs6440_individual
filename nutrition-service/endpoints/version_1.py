@@ -8,6 +8,7 @@ from flask.views import MethodView
 import requests
 import json
 import uuid
+import copy
 import os
 
 import myfitnesspal
@@ -475,12 +476,17 @@ class Get_Mfp_V1(MethodView):
 
             resp = client.get_date(curr_date).totals
             sod = {}
-            sod.update(sodium_entry)
+            sod = copy.deepcopy(sodium_entry)
             pot = {}
-            pot.update(potassium_entry)
+            pot = copy.deepcopy(potassium_entry)
             converted_date = curr_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-            new_bundle['entry'].append(populate_entry(sod, converted_date, resp['sodium'], pid))
-            new_bundle['entry'].append(populate_entry(pot, converted_date, resp['potass.'], pid))
+            updated_sod_entry = populate_entry(sod, converted_date, resp['sodium'], pid)
+            updated_pot_entry = populate_entry(pot, converted_date, resp['potass.'], pid)
+            new_sod = updated_sod_entry['resource']['valueQuantity']['value']
+            new_pot = updated_pot_entry['resource']['valueQuantity']['value']
+            print(f'date: {converted_date} values: resp sod: {resp["sodium"]} -> {new_sod} | resp pot: {resp["potass."]} -> {new_pot}')
+            new_bundle['entry'].append(updated_sod_entry)
+            new_bundle['entry'].append(updated_pot_entry)
         print(f'posting mfp bundle len {len(new_bundle["entry"])} to r4 server')
         bundle_id = post_fhir_r4_bundle(new_bundle)
 
