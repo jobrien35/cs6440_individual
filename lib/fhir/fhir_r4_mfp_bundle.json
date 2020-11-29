@@ -1,0 +1,534 @@
+{
+    "resourceType": "Bundle",
+    "type": "transaction",
+    "entry": [
+      {
+        "fullUrl": "urn:uuid:acdb080a-753f-4c48-8829-3ba82cb64c77",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "acdb080a-753f-4c48-8829-3ba82cb64c77",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81011-9",
+                "display": "Sodium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Sodium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 0.989,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81010-1",
+                "display": "Potassium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Potassium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 2.626,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:acdb080a-753f-4c48-8829-3ba82cb64c77",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "acdb080a-753f-4c48-8829-3ba82cb64c77",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81011-9",
+                "display": "Sodium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Sodium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 0.989,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81010-1",
+                "display": "Potassium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Potassium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 2.626,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:acdb080a-753f-4c48-8829-3ba82cb64c77",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "acdb080a-753f-4c48-8829-3ba82cb64c77",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81011-9",
+                "display": "Sodium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Sodium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 0.989,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81010-1",
+                "display": "Potassium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Potassium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 2.626,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:acdb080a-753f-4c48-8829-3ba82cb64c77",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "acdb080a-753f-4c48-8829-3ba82cb64c77",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81011-9",
+                "display": "Sodium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Sodium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 0.989,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81010-1",
+                "display": "Potassium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Potassium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 2.626,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:acdb080a-753f-4c48-8829-3ba82cb64c77",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "acdb080a-753f-4c48-8829-3ba82cb64c77",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81011-9",
+                "display": "Sodium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Sodium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 0.989,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81010-1",
+                "display": "Potassium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Potassium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 2.626,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:acdb080a-753f-4c48-8829-3ba82cb64c77",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "acdb080a-753f-4c48-8829-3ba82cb64c77",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81011-9",
+                "display": "Sodium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Sodium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 0.989,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      },
+      {
+        "fullUrl": "urn:uuid:bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+        "resource": {
+          "resourceType": "Observation",
+          "id": "bf0d09f9-f1b3-4fc3-81aa-7c0eea068775",
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "81010-1",
+                "display": "Potassium intake 24 hour Estimated"
+              }
+            ],
+            "text": "Potassium intake 24 hour Estimated"
+          },
+          "subject": {
+            "reference": "836126"
+          },
+          "effectiveDateTime": "2020-11-26T00:00:00Z",
+          "issued": "2020-11-26T00:00:00Z",
+          "valueQuantity": {
+            "value": 2.626,
+            "unit": "g",
+            "system": "http://unitsofmeasure.org",
+            "code": "g"
+          }
+        },
+        "request": {
+          "method": "POST",
+          "url": "Observation"
+        }
+      }
+    ]
+  }

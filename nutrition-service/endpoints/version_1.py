@@ -89,6 +89,7 @@ class Upload_FHIR_V1(MethodView):
 
         if not os.path.isdir(UPLOAD_DIRECTORY):
             os.makedirs(UPLOAD_DIRECTORY)
+            print(f'[I] upload made {UPLOAD_DIRECTORY}')
 
         # uploaded and gui knows pid already
         if os.path.isfile(fileLocation) and pid != '...':
@@ -123,38 +124,121 @@ class Download_FHIR_V1(MethodView):
         RETURNS the file requested or error response
         """
 
-        if 'fd' not in request.args:
+        if 'pid' not in request.args:
             return api_error_response('No data requested')
-        if request.args.get('fd') == '':
+        if request.args.get('pid') == '':
             return api_error_response('Invalid file name')
+        pid = request.args.get('pid')
+        fhir_data = requests.get(f'https://r4.smarthealthit.org/Observation?patient={pid}').json()
 
         print('=' * 25)
         print('[I] Download_FHIR -> get()')
-        name = request.args.get('fd')
-        print(f'[I] file requested: {name}')
-        imageName = secure_filename(name)
-        location = name.split('_')[0]
+        print(f'[I] patient requested: {pid}')
+        full = pid + '.json'
+        fname = secure_filename(full)
 
-        fileLocation = safe_join(UPLOAD_DIRECTORY, imageName)
-        print(f'[I]     filename: {imageName}')
+        if not os.path.isdir(UPLOAD_DIRECTORY):
+            os.makedirs(UPLOAD_DIRECTORY)
+            print(f'[I] download made {UPLOAD_DIRECTORY}')
+        
+        fileLocation = safe_join(UPLOAD_DIRECTORY, fname)
+        with open(fileLocation, 'w') as f:
+            json.dump(fhir_data, f)
+            print('9999 made ' + os.path.abspath(fileLocation))
+        print(f'[I]     filename: {fname}')
         print(f'[I] fileLocation: {fileLocation}')
         if os.path.isfile(fileLocation):
-            mimetype = 'image/' + imageName.split('.', 1)[1].lower()
-            return send_file(safe_join(UPLOAD_DIRECTORY, imageName), mimetype=mimetype)
+            print('9999 found ' + os.path.abspath(fileLocation))
+            mimetype = 'application/fhir+json'
+            return send_file(f'../{fileLocation}', mimetype=mimetype)
         else:
             return api_error_response('No file found', 'InternalServerError', codes['CRITERROR'])
 
 
-def daterange(start_date, end_date):
-    """ https://stackoverflow.com/questions/1060279/iterating-through-a-range-of-dates-in-python """
-    for n in range(int((end_date - start_date).days)):
-        yield start_date + timedelta(n)
+
 
 bundle = {
   "resourceType": "Bundle",
   "type": "transaction",
   "entry": []
 }
+
+bp_entry = {
+      "fullUrl": "urn:uuid:some_uuid_here",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "some_uuid_here",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "85354-9",
+              "display": "Blood Pressure"
+            }
+          ],
+          "text": "Blood Pressure"
+        },
+        "subject": {
+          "reference": "urn:uuid:pid_here"
+        },
+        "effectiveDateTime": "2020-03-07T20:22:14-04:00",
+        "issued": "2020-03-107T20:22:14.197-04:00",
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8462-4",
+                  "display": "Diastolic Blood Pressure"
+                }
+              ],
+              "text": "Diastolic Blood Pressure"
+            },
+            "valueQuantity": {
+              "value": 0,
+              "unit": "mm[Hg]",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8480-6",
+                  "display": "Systolic Blood Pressure"
+                }
+              ],
+              "text": "Systolic Blood Pressure"
+            },
+            "valueQuantity": {
+              "value": 0,
+              "unit": "mm[Hg]",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    }
 
 sodium_entry = {
   "fullUrl": "urn:uuid:uuid_here",
@@ -247,42 +331,83 @@ potassium_entry = {
 }
 
 
-def populate_entry(entry, entry_uuid, entry_date, entry_value, pid):
+def populate_entry(entry, entry_date, entry_value, pid):
     """
     take in a minimally populated fhir r4 observation dict and populate with any necessary values
 
     to be appended to bundle entry list afterwards
 
-    """
+    assume date properly formatted before calling
 
+    """
+    entry_uuid = uuid.uuid1()
     entry['fullUrl'] = entry_uuid.urn
     entry['resource']['id'] = str(entry_uuid)
-    entry['resource']['subject']['reference'] = pid
+    # need to specify 'Patient/x' as resource needs to exist, or use uuid contained in transaction
+    entry['resource']['subject']['reference'] = f'Patient/{pid}'
 
     # match units for loinc code for potassium and sodium
+    # TODO: can move loic code math out to make code more general
     entry['resource']['valueQuantity']['value'] = entry_value/1000
 
-    converted_date = entry_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-    entry['resource']['effectiveDateTime'] = converted_date
-    entry['resource']['issued'] = converted_date
-
-    print('='*10 + ' entry ' + '='*10)
-    print(entry)
-    print('='*30)
-
+    entry['resource']['effectiveDateTime'] = entry_date
+    entry['resource']['issued'] = entry_date
+    print(f'uuid {entry["resource"]["id"]}')
     return entry
 
+def populate_bp(entry, entry_date, pid, systolic_value, diastolic_value):
+    """
+    take in a minimally populated fhir r4 observation dict and populate bp hardcoded components
+    """
+    entry_uuid = uuid.uuid1()
+    entry['fullUrl'] = entry_uuid.urn
+    entry['resource']['id'] = str(entry_uuid)
+    # need to specify 'Patient/x' as resource needs to exist, or use uuid contained in transaction
+    entry['resource']['subject']['reference'] = f'Patient/{pid}'
+
+    # hard code this ordering to match hardcoded in-line sample
+    entry['resource']['component'][0]['valueQuantity']['value'] = diastolic_value
+    entry['resource']['component'][1]['valueQuantity']['value'] = systolic_value
+
+    entry['resource']['effectiveDateTime'] = entry_date
+    entry['resource']['issued'] = entry_date
+    print(f'uuid {entry["resource"]["id"]}')
+    return entry
+
+def post_fhir_r4_bundle(bundle_dict):
+    """
+    more generic than the upload fhir file method because we're using it twice and code should
+    work fine for both routes
+
+    returns bundle id or None
+    """
+    send = json.dumps(bundle_dict)
+    resp = requests.post('https://r4.smarthealthit.org', json=bundle_dict)
+
+    print(resp.status_code)
+    js = resp.json()
+    if resp.status_code in [200, 201]:
+        print(js['id'])
+        return js['id']
+    return None
+
+
+def format_bundle_response(msg, bundle, bundle_id, pid, code=codes['SUCCESS']):
+    args = {
+        'pid': pid,
+        'bundle_id': bundle_id,
+        'bundle': bundle
+    }
+    return api_success_response(msg, args, code)
+
+
+def daterange(start_date, end_date):
+    """ https://stackoverflow.com/questions/1060279/iterating-through-a-range-of-dates-in-python """
+    for n in range(int((end_date - start_date).days)):
+        yield start_date + timedelta(n)
 
 
 class Get_Mfp_V1(MethodView):
-
-    def format_response(self, msg, bundle, pid, code=codes['SUCCESS']):
-        args = {
-            'pid': pid,
-            'bundle': bundle
-        }
-        return api_success_response(msg, args, code)
-
     @cross_origin()
     def post(self):
         """
@@ -292,7 +417,9 @@ class Get_Mfp_V1(MethodView):
         end - end date to stop requesting nutrition data from vendor
         pid - fhir patient id to add observations to
 
-        returns list of entries to be graphed
+        returns bundle already post'ed to r4 server
+        returns bundle id
+        returns patient id
         """
 
         data = request.form.to_dict(flat=False)
@@ -334,17 +461,81 @@ class Get_Mfp_V1(MethodView):
         new_bundle = bundle
         for curr_date in daterange(start_date, end_date):
             print(curr_date)
-            sodium_uuid = uuid.uuid4()
-            potassium_uuid = uuid.uuid4()
-            print(f"[I] sodium: {sodium_uuid} potassium: {potassium_uuid}")
 
             resp = client.get_date(curr_date).totals
-            print(resp)
+            sod = {}
+            sod.update(sodium_entry)
+            pot = {}
+            pot.update(potassium_entry)
+            converted_date = curr_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+            bundle['entry'].append(populate_entry(sod, converted_date, resp['sodium'], pid))
+            bundle['entry'].append(populate_entry(pot, converted_date, resp['potass.'], pid))
+        print('posting bundle to r4 server')
+        bundle_id = post_fhir_r4_bundle(bundle)
 
-            bundle['entry'].append(populate_entry(sodium_entry, sodium_uuid, curr_date, resp['sodium'], pid))
-            bundle['entry'].append(populate_entry(potassium_entry, potassium_uuid, curr_date, resp['potass.'], pid))
-            #print(type(curr_date))
+        return format_bundle_response('mfp done', bundle, bundle_id, pid)
 
-        #print(client.get_measurements())
-        #print(dir(client))
-        return self.format_response('mfp done', bundle, pid)
+
+class Post_New_FHIR_R4_Observation(MethodView):
+    """
+    post desired observation type with related values to be persisted in fhir r4 server so download
+    can get latest observation set.
+
+    assume frontend updates gui separately and fhir requests only needed for upload/download workflows
+    since these observations are newer in time than the ones already stored, as previous requests
+    would have already received the latest of everything else
+    """
+    SUPPORTED_OBSERVATIONS = ['sod', 'pot', 'bp']
+    @cross_origin()
+    def post(self):
+
+        data = request.form.to_dict(flat=False)
+        if 'pid' not in data:
+            return api_error_response('No pid provided')
+        if 'date' not in data:
+            return api_error_response('No date provided')
+        if 'val' not in data:
+            return api_error_response('No value provided')
+        if 'type' not in data:
+            return api_error_response('No observation type provided')
+        typ = data['type'][0]
+        if typ not in self.SUPPORTED_OBSERVATIONS:
+            return api_error_response(f'Unsupported observation type {typ}')
+        if typ == 'bp' and 'val2' not in data:
+            return api_error_response('BP 1/2 provided')
+
+        pid = data['pid'][0]
+        date = data['date'][0]
+        # systolic
+        val = data['val'][0]
+
+        val2 = None
+
+        desired_entry = None
+        new_bundle = bundle
+        entry = {}
+
+        if typ == 'bp':
+            # diastolic
+            val2 = data['val2'][0]
+            desired_entry = bp_entry
+        elif typ == 'sod':
+            desired_entry = sodium_entry
+        elif typ == 'pot':
+            desired_entry = potassium_entry
+
+        print(f'[I] pid: {pid} val: {val} type: {typ} val2: {val2}')
+
+        entry.update(desired_entry)
+
+        if typ == 'bp':
+            entry = populate_bp(entry, date, pid, int(val), int(val2))
+        elif typ in ['sod', 'pot']:
+            entry = populate_entry(entry, date, float(val), pid)
+
+        bundle['entry'].append(entry)
+        
+        print('posting observation bundle to r4 server')
+        bundle_id = post_fhir_r4_bundle(bundle)
+
+        return format_bundle_response('observation post done', bundle, bundle_id, pid)

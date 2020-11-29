@@ -1,0 +1,365 @@
+{
+	"info": {
+		"_postman_id": "3fc10379-e170-47a3-bafa-e7ab12a398a8",
+		"name": "cs6440-fhir",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "SMART r4 post bundle",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/fhir+json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://r4.smarthealthit.org",
+					"protocol": "https",
+					"host": [
+						"r4",
+						"smarthealthit",
+						"org"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SMART r4 post mfp bundle",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/fhir+json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://r4.smarthealthit.org",
+					"protocol": "https",
+					"host": [
+						"r4",
+						"smarthealthit",
+						"org"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post mfp",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/fhir+json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "u",
+							"value": "jobrien35",
+							"type": "text"
+						},
+						{
+							"key": "p",
+							"value": "Pinto43212020gt",
+							"type": "text"
+						},
+						{
+							"key": "start",
+							"value": "2020-11-21",
+							"type": "text"
+						},
+						{
+							"key": "end",
+							"value": "2020-11-27",
+							"type": "text"
+						},
+						{
+							"key": "pid",
+							"value": "835871",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://192.168.188.129:1337/api/v1/nutrition/mfp",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"188",
+						"129"
+					],
+					"port": "1337",
+					"path": [
+						"api",
+						"v1",
+						"nutrition",
+						"mfp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post new gui observation",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/fhir+json"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "pid",
+							"value": "842130",
+							"type": "text"
+						},
+						{
+							"key": "date",
+							"value": "2020-11-29T02:49:54.744Z",
+							"type": "text"
+						},
+						{
+							"key": "val",
+							"value": "1337",
+							"type": "text"
+						},
+						{
+							"key": "type",
+							"value": "sod",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://192.168.188.129:1337/api/v1/nutrition/observation",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"188",
+						"129"
+					],
+					"port": "1337",
+					"path": [
+						"api",
+						"v1",
+						"nutrition",
+						"observation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SMART r4 get observations by pid",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://r4.smarthealthit.org/Observation?patient=835871",
+					"protocol": "https",
+					"host": [
+						"r4",
+						"smarthealthit",
+						"org"
+					],
+					"path": [
+						"Observation"
+					],
+					"query": [
+						{
+							"key": "patient",
+							"value": "835871"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SMART r4 post bundle observation",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/fhir+json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://r4.smarthealthit.org",
+					"protocol": "https",
+					"host": [
+						"r4",
+						"smarthealthit",
+						"org"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SMART r4 get patient",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/fhir+json"
+					}
+				],
+				"url": {
+					"raw": "https://r4.smarthealthit.org/Patient/711138",
+					"protocol": "https",
+					"host": [
+						"r4",
+						"smarthealthit",
+						"org"
+					],
+					"path": [
+						"Patient",
+						"711138"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SMART r4 post Update Observation",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/fhir+json"
+					}
+				],
+				"body": {}
+				},
+				"url": {
+					"raw": "https://r4.smarthealthit.org",
+					"protocol": "https",
+					"host": [
+						"r4",
+						"smarthealthit",
+						"org"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PY upload file",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/fhir+json",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "fd",
+							"type": "file",
+							"src": "/C:/Users/user/Downloads/last_first_uuid.json"
+						},
+						{
+							"key": "pid",
+							"value": "842195",
+							"type": "text"
+						}
+					],
+					"options": {
+						"formdata": {}
+					}
+				},
+				"url": {
+					"raw": "http://192.168.188.129:1337/api/v1/nutrition/upload",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"188",
+						"129"
+					],
+					"port": "1337",
+					"path": [
+						"api",
+						"v1",
+						"nutrition",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PY download file",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/fhir+json",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://192.168.188.129:1337/api/v1/nutrition/download?pid=842195",
+					"protocol": "http",
+					"host": [
+						"192",
+						"168",
+						"188",
+						"129"
+					],
+					"port": "1337",
+					"path": [
+						"api",
+						"v1",
+						"nutrition",
+						"download"
+					],
+					"query": [
+						{
+							"key": "pid",
+							"value": "842195"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
