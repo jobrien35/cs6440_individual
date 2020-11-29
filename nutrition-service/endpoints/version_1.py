@@ -129,6 +129,8 @@ class Download_FHIR_V1(MethodView):
         if request.args.get('pid') == '':
             return api_error_response('Invalid file name')
         pid = request.args.get('pid')
+        if pid == '...':
+            return api_error_response('Invalid pid value')
         fhir_data = requests.get(f'https://r4.smarthealthit.org/Observation?patient={pid}').json()
 
         print('=' * 25)
@@ -457,7 +459,17 @@ class Get_Mfp_V1(MethodView):
 
         start_date = date(start_y, start_m, start_d)
         end_date = date(end_y, end_m, end_d)
-        new_bundle = bundle
+        # instantiate a new bundle, don't append to the singleton
+        new_bundle = {}
+        new_bundle.update(bundle)
+        bundle_length = len(new_bundle["entry"])
+        print(f'[I] initial mfp bundle size {bundle_length}')
+        if bundle_length > 0:
+            print('[I] resetting mfp bundle entry')
+            new_bundle['entry'] = []
+
+        print(f'[I] second mfp bundle size {len(new_bundle["entry"])}')
+
         for curr_date in daterange(start_date, end_date):
             print(curr_date)
 
@@ -467,12 +479,12 @@ class Get_Mfp_V1(MethodView):
             pot = {}
             pot.update(potassium_entry)
             converted_date = curr_date.strftime("%Y-%m-%dT%H:%M:%SZ")
-            bundle['entry'].append(populate_entry(sod, converted_date, resp['sodium'], pid))
-            bundle['entry'].append(populate_entry(pot, converted_date, resp['potass.'], pid))
-        print('posting bundle to r4 server')
-        bundle_id = post_fhir_r4_bundle(bundle)
+            new_bundle['entry'].append(populate_entry(sod, converted_date, resp['sodium'], pid))
+            new_bundle['entry'].append(populate_entry(pot, converted_date, resp['potass.'], pid))
+        print(f'posting mfp bundle len {len(new_bundle["entry"])} to r4 server')
+        bundle_id = post_fhir_r4_bundle(new_bundle)
 
-        return format_bundle_response('mfp done', bundle, bundle_id, pid)
+        return format_bundle_response('mfp done', new_bundle, bundle_id, pid)
 
 
 class Post_New_FHIR_R4_Observation(MethodView):
@@ -511,8 +523,17 @@ class Post_New_FHIR_R4_Observation(MethodView):
         val2 = None
 
         desired_entry = None
-        new_bundle = bundle
-        entry = {}
+        # instantiate a new object, don't append to the singleton
+        new_bundle = {}
+        new_bundle.update(bundle)
+        bundle_length = len(new_bundle["entry"])
+        print(f'[I] initial bundle size {bundle_length}')
+        if bundle_length > 0:
+            print('[I] resetting bundle entry')
+            new_bundle['entry'] = []
+
+        print(f'[I] second bundle size {len(new_bundle["entry"])}')
+        new_entry = {}
 
         if typ == 'bp':
             # diastolic
@@ -525,16 +546,16 @@ class Post_New_FHIR_R4_Observation(MethodView):
 
         print(f'[I] pid: {pid} val: {val} type: {typ} val2: {val2}')
 
-        entry.update(desired_entry)
+        new_entry.update(desired_entry)
 
         if typ == 'bp':
-            entry = populate_bp(entry, date, pid, int(val), int(val2))
+            new_entry = populate_bp(new_entry, date, pid, int(val), int(val2))
         elif typ in ['sod', 'pot']:
-            entry = populate_entry(entry, date, float(val), pid)
+            new_entry = populate_entry(new_entry, date, float(val), pid)
 
-        bundle['entry'].append(entry)
+        new_bundle['entry'].append(new_entry)
         
-        print('posting observation bundle to r4 server')
-        bundle_id = post_fhir_r4_bundle(bundle)
+        print(f'[I] Post new bundle length {len(new_bundle["entry"])} to r4 server')
+        bundle_id = post_fhir_r4_bundle(new_bundle)
 
-        return format_bundle_response('observation post done', bundle, bundle_id, pid)
+        return format_bundle_response('observation post done', new_bundle, bundle_id, pid)
